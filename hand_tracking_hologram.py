@@ -39,13 +39,26 @@ def effect_thermal(frame_bgr):
     return cv2.applyColorMap(gray, cv2.COLORMAP_JET)
 
 def effect_neon(frame_bgr):
-    gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(gray, 60, 150)
-    neon = np.zeros_like(frame_bgr)
-    neon[edges > 0] = (255, 60, 220)
-    glow = cv2.GaussianBlur(neon, (7, 7), 3)
-    return cv2.addWeighted(neon, 1.0, glow, 0.6, 0)
-
+    # 1. Tingkatkan kontras agar lebih dramatis
+    enhanced = cv2.convertScaleAbs(frame_bgr, alpha=1.2, beta=10)
+    
+    # 2. Ubah ke hitam putih, lalu timpa dengan warna Cyberpunk (Cool Colormap)
+    gray = cv2.cvtColor(enhanced, cv2.COLOR_BGR2GRAY)
+    cyber_color = cv2.applyColorMap(gray, cv2.COLORMAP_COOL)
+    
+    # 3. Buat efek garis TV tabung (Scanlines)
+    h, w, _ = frame_bgr.shape
+    scanlines = np.full((h, w, 3), 255, dtype=np.uint8)
+    scanlines[::4, :] = 0  # Gelapkan setiap 4 baris pixel
+    
+    # 4. Gabungkan warna dengan scanlines
+    blended = cv2.bitwise_and(cyber_color, scanlines)
+    
+    # 5. Ekstrak garis tepi (edges) dan beri warna Cyan terang (B=255, G=255, R=0)
+    edges = cv2.Canny(gray, 50, 150)
+    blended[edges > 0] = (255, 255, 0) 
+    
+    return blended
 def effect_matrix(frame_bgr):
     gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, 40, 120)
