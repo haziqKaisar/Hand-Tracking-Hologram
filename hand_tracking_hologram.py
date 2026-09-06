@@ -181,11 +181,8 @@ def main():
 
                 output_frame = np.where(mask_3ch == 255, effect_frame, output_frame)
                 
-                
-                # Garis pinggiran hologram bercahaya (Glow Effect)
-                cv2.polylines(output_frame, [clean_box_pts], isClosed=True, color=(255, 0, 255), thickness=10, lineType=cv2.LINE_AA) # Glow luar (Magenta)
-                cv2.polylines(output_frame, [clean_box_pts], isClosed=True, color=(255, 255, 0), thickness=4, lineType=cv2.LINE_AA)  # Lapisan tengah (Cyan)
-                cv2.polylines(output_frame, [clean_box_pts], isClosed=True, color=(255, 255, 255), thickness=1, lineType=cv2.LINE_AA) # Inti terang (Putih)
+                # Garis pinggiran hologram
+                cv2.polylines(output_frame, [clean_box_pts], isClosed=True, color=(255, 255, 255), thickness=2, lineType=cv2.LINE_AA)
 
                 # Logika Ganti Efek
                 if l["is_pinching"] and r["is_pinching"]:
